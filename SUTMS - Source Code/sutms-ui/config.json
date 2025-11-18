@@ -1,0 +1,9 @@
+{
+  "NTOP_URL": "http://127.0.0.1:3000",       
+  "NTOP_API_KEY": "",                           
+  "NTOP_USE_SAMPLE_ON_FAIL": true,
+  "SURICATA_EVE_PATH": "/var/log/suricata/eve.json",
+  "SURICATA_USE_SAMPLE_ON_FAIL": true,
+  "IP_WHITELIST": ["192.168.0.0/16"],           
+  "CACHE_SECONDS": 30
+}

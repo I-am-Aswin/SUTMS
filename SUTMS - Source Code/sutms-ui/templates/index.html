@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="60">
+  <title>SUTMS Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>SUTMS Dashboard</h1>
+    <nav>
+      <!-- <a href="/">Dashboard</a> -->
+      <a href="/threat-management.html">Suricata</a>
+      <!-- <a href="/analytics.html">Analytics</a> -->
+      <a href="/goto/suricata" target="_blank">Webmin</a>
+      <a href="/goto/ntop" target="_blank">ntop</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- <section class="cards" id="summary-cards">
+      <div class="card"><h3>Total Threats</h3><p id="card-threats">-</p></div>
+    <section class="cards" id="summary-cards"> -->
+      <!-- <div class="card">
+        <h3>System Health</h3>
+        <div id="card-health">
+          <p>CPU Temp: <span id="cpu-temp">-</span>°C</p>
+          <p>CPU Usage: <span id="cpu-usage">-</span>%</p>
+          <p>Memory: <span id="memory-usage">-</span>%</p>
+          <p>Disk: <span id="disk-usage">-</span>%</p>
+        </div>
+      </div> -->
+      <!-- <div class="card">
+        <h3>Resource Details</h3>
+        <div id="card-resources">
+          <p>CPU Freq: <span id="cpu-freq">-</span> MHz</p>
+          <p>Memory Used: <span id="memory-used">-</span></p>
+          <p>Swap Used: <span id="swap-used">-</span>%</p>
+          <p>Disk Free: <span id="disk-free">-</span></p>
+        </div>
+      </div> -->
+      <div class="card">
+        <h3>ntop Status</h3>
+        <div id="ntop-health">
+          <p>CPU Load: {{ format_percent(ntop_stats.get('cpu', {}).get('cpu_load', 0)) }}
+             (User: {{ format_percent(ntop_stats.get('cpu', {}).get('cpu_user', 0)) }},
+              Sys: {{ format_percent(ntop_stats.get('cpu', {}).get('cpu_system', 0)) }})</p>
+          <p>Memory: {{ format_mb(ntop_stats.get('memory', {}).get('mem_used_MB', 0)) }} / 
+                     {{ format_mb(ntop_stats.get('memory', {}).get('mem_total_MB', 0)) }}</p>
+          <p>Storage: {{ format_gb(ntop_stats.get('storage', {}).get('storage_total_MB', 0)) }}</p>
+          <p>Alerts: {{ ntop_stats.get('alerts', {}).get('written_alerts', 0) }} written, 
+                     {{ ntop_stats.get('alerts', {}).get('dropped_alerts', 0) }} dropped</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="interfaces-section">
+      <h2>Network Interfaces</h2>
+      <div class="interface-cards">
+        {% if interface_stats.get('error') %}
+          <div class="error-card">
+            <p>Error loading interfaces: {{ interface_stats.get('error') }}</p>
+          </div>
+        {% else %}
+          {% for interface in interface_stats.get('interfaces', []) %}
+            <div class="interface-card">
+              <h3>{{ interface.get('name', 'Unknown Interface') }}</h3>
+              <p>ID: {{ interface.get('interface_id', 'N/A') }}</p>
+              <p>Type: 
+                {% if interface.get('is_pcap') %}PCAP
+                {% elif interface.get('is_packet') %}Packet
+                {% elif interface.get('is_zmq') %}ZMQ
+                {% else %}Standard{% endif %}
+              </p>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="hosts-section">
+      <h2>Active Network Hosts</h2>
+      {% if hosts_data.get('error') %}
+        <div class="error-card">
+          <p>Error loading hosts: {{ hosts_data.get('error') }}</p>
+        </div>
+      {% else %}
+        <div class="hosts-table-wrapper">
+          <table class="hosts-table">
+            <thead>
+              <tr>
+                <th>Host</th>
+                <th>IP Address</th>
+                <th>Traffic In</th>
+                <th>Traffic Out</th>
+                <th>Throughput</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for host in hosts_data.get('active_hosts', []) %}
+                <tr class="{% if host.is_blacklisted %}blacklisted{% endif %}">
+                  <td>
+                    {{ host.name or 'Unknown' }}
+                    {% if host.is_localhost %}<span class="tag">Local</span>{% endif %}
+                    {% if host.country %}<span class="country-tag">{{ host.country }}</span>{% endif %}
+                  </td>
+                  <td>{{ host.ip or 'N/A' }}</td>
+                  <td>{{ format_bytes(host.bytes_received) }}</td>
+                  <td>{{ format_bytes(host.bytes_sent) }}</td>
+                  <td>{{ format_throughput(host.throughput_bps) }}</td>
+                  <td>
+                    {% if host.is_blacklisted %}
+                      <span class="status-tag danger">Blacklisted</span>
+                    {% else %}
+                      <span class="status-tag">Active</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </section>
+
+    
+  </main>
+
+  <footer>© SUTMS</footer>
+  <script src="/static/js/main.js"></script>
+  <script>
+    // init page
+    window.SUTMS_PAGE = "dashboard";
+    window.onload = function(){ SUTMS_init(); }
+    window.onunload = function() {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+    }
+  </script>
+</body>
+</html>

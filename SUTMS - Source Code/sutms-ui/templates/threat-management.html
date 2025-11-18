@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="60">
+  <title>SUTMS - Threat Management</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/threat-management.css">
+</head>
+<body>
+  <header>
+    <h1>Threat Management</h1>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/threat-management.html">Threats</a>
+    </nav>
+  </header>
+  <section class="section">
+      <h2>IDS Alerts (fast.log)</h2>
+      <table id="tm-alerts-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Alert</th>
+            <th>Classification</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in alerts %}
+            <tr class="priority-{{ a.priority }}">
+              <td>{{ a.timestamp or '-' }}</td>
+              <td>{{ a.source or '-' }}</td>
+              <td>{{ a.destination or '-' }}</td>
+              <td>{{ a.description or '-' }}</td>
+              <td>{{ a.classification or '-' }}</td>
+              <td>{{ a.priority or '-' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6">No alerts available</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+  <main class="container">
+    <section class="section">
+      <h2>Network Events (eve.json)</h2>
+      <table id="tm-events-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in events %}
+            <tr class="{{ e.status }}">
+              <td>{{ e.timestamp if e.timestamp else '-' }}</td>
+              <td>{{ e.src_ip or '-' }}</td>
+              <td>{{ e.dest_ip or '-' }}</td>
+              <td>{{ e.event_type or '-' }}</td>
+              <td>{{ e.details or '-' }}</td>
+              <td>{{ e.status or 'normal' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6">No events available</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    
+
+    <section class="section">
+      <h2>Suricata System Stats</h2>
+      {% set s = suricata_stats.eve if suricata_stats and suricata_stats.eve else {} %}
+      <div class="stats-grid">
+        <div class="card small">
+          <h4>Uptime</h4>
+          <p>{{ s.uptime | default('N/A') }} seconds</p>
+        </div>
+        <div class="card small">
+          <h4>Capture</h4>
+          <p>Kernel Packets: {{ s.capture.kernel_packets | default(0) }}</p>
+          <p>Kernel Drops: {{ s.capture.kernel_drops | default(0) }}</p>
+          <p>Errors: {{ s.capture.errors | default(0) }}</p>
+        </div>
+        <div class="card small">
+          <h4>Decoder</h4>
+          <p>Packets: {{ s.decoder.pkts | default(0) }}</p>
+          <p>Bytes: {{ s.decoder.bytes | default(0) }}</p>
+        </div>
+        <div class="card small">
+          <h4>Detect</h4>
+          <p>Alerts: {{ s.detect.alert | default(0) }}</p>
+          <p>Engines: {{ (s.detect.engines | length) if s.detect and s.detect.engines else 0 }}</p>
+        </div>
+      </div>
+
+      <h3>Selected Counters (from stats.log)</h3>
+      <table class="hosts-table">
+        <thead><tr><th>Counter</th><th>Value</th></tr></thead>
+        <tbody>
+          {% for k,v in suricata_stats.counters.items() %}
+            <tr><td>{{ k }}</td><td>{{ v }}</td></tr>
+          {% else %}
+            <tr><td colspan="2">No counters available</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Firewall / IoC Feed</h2>
+      <p>IoC feed status & sample info will be shown here (backend-driven).</p>
+      <pre id="ioc-info">{ "status": "connected" }</pre>
+    </section>
+  </main>
+
+  <footer>© SUTMS</footer>
+  <!-- Alerts and Suricata stats are rendered server-side; no client-side loader to avoid duplicate fetches -->
+</body>
+</html>

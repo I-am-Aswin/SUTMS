@@ -1,0 +1,7 @@
+{
+  "alerts": [
+    {"timestamp":"2025-11-02T18:15:00.000Z","src_ip":"192.168.1.12","dest_ip":"103.21.244.0","alert":"HTTP Exploit","severity":3,"event_type":"alert"},
+    {"timestamp":"2025-11-02T18:45:00.000Z","src_ip":"192.168.1.22","dest_ip":"8.8.8.8","alert":"DNS Anomaly","severity":2,"event_type":"alert"},
+    {"timestamp":"2025-11-02T17:55:00.000Z","src_ip":"192.168.1.15","dest_ip":"172.217.194.138","alert":"Port Scan","severity":1,"event_type":"alert"}
+  ]
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SUTMS - Analytics</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Analytics & Logs</h1>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/threat-management.html">Threats</a>
+      <a href="/analytics.html">Analytics</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <h2>Anomalies (sample)</h2>
+      <canvas id="anomalyChart"></canvas>
+    </section>
+
+    <section class="section">
+      <h2>System Performance</h2>
+      <canvas id="perfChart"></canvas>
+    </section>
+  </main>
+
+  <footer>© SUTMS</footer>
+  <script src="/static/js/main.js"></script>
+  <script>window.SUTMS_PAGE="analytics"; window.onload=SUTMS_init;</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SUTMS UI</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>SUTMS</h1>
+    <nav>
+      <button id="nav-dashboard" onclick="setPage('dashboard')">Dashboard</button>
+      <button id="nav-threats" onclick="setPage('threats')">Threats</button>
+      <button id="nav-analytics" onclick="setPage('analytics')">Analytics</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Dashboard -->
+    <section id="dashboard-section" class="page">
+      <div class="cards">
+        <div class="card"><div class="card-title">Threats</div><div id="card-threats" class="card-value">—</div></div>
+        <div class="card"><div class="card-title">Devices</div><div id="card-devices" class="card-value">—</div></div>
+        <div class="card"><div class="card-title">Health</div><div id="card-health" class="card-value">—</div></div>
+        <div class="card"><div class="card-title">Resources</div><div id="card-resources" class="card-value">—</div></div>
+      </div>
+
+      <section class="widget">
+        <h2>Traffic</h2>
+        <canvas id="trafficChart" width="800" height="250"></canvas>
+      </section>
+
+      <section class="widget">
+        <h2>Recent Alerts</h2>
+        <table class="table" id="alerts-table">
+          <thead><tr><th>Time</th><th>Src</th><th>Dst</th><th>Alert</th><th>Severity</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- Threats -->
+    <section id="threats-section" class="page hidden">
+      <section class="widget">
+        <h2>Threat Alerts</h2>
+        <table class="table" id="tm-alerts-table">
+          <thead><tr><th>Time</th><th>Src</th><th>Dst</th><th>Alert</th><th>Severity</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="widget">
+        <h2>IoC Feed</h2>
+        <pre id="ioc-info" class="ioc-info">Loading...</pre>
+      </section>
+    </section>
+
+    <!-- Analytics -->
+    <section id="analytics-section" class="page hidden">
+      <div class="analytics-grid">
+        <section class="widget">
+          <h2>Anomalies</h2>
+          <canvas id="anomalyChart" width="600" height="260"></canvas>
+        </section>
+
+        <section class="widget">
+          <h2>Performance</h2>
+          <canvas id="perfChart" width="600" height="260"></canvas>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">SUTMS — UI</footer>
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./js/main.js"></script>
+
+  <script>
+    // determine initial page via ?page=... or default to dashboard
+    function currentQueryPage() {
+      try {
+        const p = new URLSearchParams(location.search).get('page');
+        return p || 'dashboard';
+      } catch(e){ return 'dashboard'; }
+    }
+
+    function showSection(page) {
+      document.querySelectorAll('.page').forEach(el=>el.classList.add('hidden'));
+      document.getElementById(page+'-section')?.classList.remove('hidden');
+      document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+      document.getElementById('nav-'+page)?.classList.add('active');
+    }
+
+    function setPage(page){
+      window.SUTMS_PAGE = page;
+      history.replaceState({}, '', '?page='+page);
+      showSection(page);
+      if (typeof SUTMS_init === 'function') SUTMS_init();
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const page = currentQueryPage();
+      window.SUTMS_PAGE = page;
+      showSection(page);
+      if (typeof SUTMS_init === 'function') SUTMS_init();
+    });
+  </script>
+</body>
+</html>

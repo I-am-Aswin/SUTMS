@@ -1,0 +1,16 @@
+[Unit]
+Description=SUTMS Logging Engine
+After=network.target
+
+[Service]
+# Path to your virtualenv (optional)
+WorkingDirectory=/home/hackerspace1/sutms/src/dashboard
+ExecStart=/home/hackerspace1/sutms/src/dashboard/.venv/bin/python3 /home/hackerspace1/sutms/src/dashboard/sutms-ui/logger_engine.py 
+Restart=always
+User=hackerspace1
+Group=hackerspace1
+Environment=FLASK_ENV=production
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
